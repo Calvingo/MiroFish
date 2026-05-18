@@ -238,6 +238,29 @@ class SimulationRunner:
         if state:
             cls._run_states[simulation_id] = state
         return state
+
+    @classmethod
+    def purge_simulation(cls, simulation_id: str):
+        """清理指定模拟在运行器中的内存状态。"""
+        cls._run_states.pop(simulation_id, None)
+        cls._processes.pop(simulation_id, None)
+        cls._action_queues.pop(simulation_id, None)
+        cls._monitor_threads.pop(simulation_id, None)
+        cls._graph_memory_enabled.pop(simulation_id, None)
+
+        stdout_file = cls._stdout_files.pop(simulation_id, None)
+        if stdout_file:
+            try:
+                stdout_file.close()
+            except Exception:
+                pass
+
+        stderr_file = cls._stderr_files.pop(simulation_id, None)
+        if stderr_file:
+            try:
+                stderr_file.close()
+            except Exception:
+                pass
     
     @classmethod
     def _load_run_state(cls, simulation_id: str) -> Optional[SimulationRunState]:
@@ -1765,4 +1788,3 @@ class SimulationRunner:
             results = results[:limit]
         
         return results
-

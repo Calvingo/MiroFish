@@ -1700,6 +1700,45 @@ def stop_simulation():
         }), 500
 
 
+@simulation_bp.route('/<simulation_id>', methods=['DELETE'])
+def delete_simulation(simulation_id: str):
+    """删除模拟及其本地运行数据。"""
+    try:
+        manager = SimulationManager()
+        state = manager.get_simulation(simulation_id)
+        if not state:
+            return jsonify({
+                "success": False,
+                "error": t('api.simulationNotFound', id=simulation_id)
+            }), 404
+
+        run_state = SimulationRunner.get_run_state(simulation_id)
+        if run_state and run_state.runner_status in [RunnerStatus.RUNNING, RunnerStatus.PAUSED]:
+            SimulationRunner.stop_simulation(simulation_id)
+
+        success = manager.delete_simulation(simulation_id)
+        if not success:
+            return jsonify({
+                "success": False,
+                "error": t('api.simulationNotFound', id=simulation_id)
+            }), 404
+
+        SimulationRunner.purge_simulation(simulation_id)
+
+        return jsonify({
+            "success": True,
+            "message": t('api.simulationDeleted', id=simulation_id)
+        })
+
+    except Exception as e:
+        logger.error(f"删除模拟失败: {str(e)}")
+        return jsonify({
+            "success": False,
+            "error": str(e),
+            "traceback": traceback.format_exc()
+        }), 500
+
+
 # ============== 实时状态监控接口 ==============
 
 @simulation_bp.route('/<simulation_id>/run-status', methods=['GET'])
