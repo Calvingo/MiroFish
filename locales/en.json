@@ -342,6 +342,7 @@
     "graphNotBuilt": "Graph not yet built. Please call /api/graph/build first.",
     "requireSimulationId": "Please provide simulation_id",
     "simulationNotFound": "Simulation not found: {id}",
+    "simulationDeleted": "Simulation deleted: {id}",
     "projectMissingRequirement": "Project missing simulation requirement (simulation_requirement)",
     "prepareStarted": "Preparation task started. Query progress via /api/simulation/prepare/status.",
     "alreadyPrepared": "Preparation already complete. No need to regenerate.",

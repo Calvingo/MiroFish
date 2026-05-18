@@ -459,6 +459,23 @@ class SimulationManager:
     def get_simulation(self, simulation_id: str) -> Optional[SimulationState]:
         """获取模拟状态"""
         return self._load_simulation_state(simulation_id)
+
+    def delete_simulation(self, simulation_id: str) -> bool:
+        """
+        删除模拟及其所有本地文件。
+
+        注意：这里不能调用 _get_simulation_dir() 来判断目录是否存在，
+        因为该方法会在目录缺失时重新创建空目录。
+        """
+        sim_dir = os.path.join(self.SIMULATION_DATA_DIR, simulation_id)
+        if not os.path.exists(sim_dir):
+            self._simulations.pop(simulation_id, None)
+            return False
+
+        shutil.rmtree(sim_dir)
+        self._simulations.pop(simulation_id, None)
+        logger.info(f"删除模拟: {simulation_id}")
+        return True
     
     def list_simulations(self, project_id: Optional[str] = None) -> List[SimulationState]:
         """列出所有模拟"""
