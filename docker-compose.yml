@@ -1,9 +1,6 @@
 services:
   mirofish:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: calvingo/mirofish:ulog
+    image: ghcr.io/calvingo/mirofish:ulog-main
     container_name: mirofish
     env_file:
       - .env
